@@ -22,7 +22,6 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.inventory.ItemStack
 import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ParserHolder.option
 import taboolib.module.kether.combinationParser
 
 /**
@@ -50,16 +49,36 @@ object ActionWorld {
         }
     }
 
+    @KetherParser(["strike-lightning-effect", "lightning-effect"], shared = true)
+    fun strikeLightningEffectParser() = combinationParser {
+        it.group(type<Location>()).apply(it) { loc ->
+            now {
+                loc.world.strikeLightningEffect(loc)
+            }
+        }
+    }
+
     @KetherParser(["create-explosion"], shared = true)
     fun createExplosionParser() = combinationParser {
-        it.group(type<Location>(), float(), command("by", then = type<Entity>()).option(), command("fire", then = bool()).option(), command("break", then = bool()).option()).apply(it) { location, float, entity, fire, break0 ->
-            now { location.world.createExplosion(entity, location, float, fire ?: true, break0 ?: true) }
+        it.group(
+            type<Location>(),
+            float(),
+            command("by", then = type<Entity>()).option(),
+            command("fire", then = bool()).option(),
+            command("break", then = bool()).option(),
+            command("exclude-source-from-damage", then = bool()).option()
+        ).apply(it) { location, float, entity, fire, break0, excludeSourceFromDamage ->
+            now { location.world.createExplosion(entity, location, float, fire ?: true, break0 ?: true, excludeSourceFromDamage ?: true) }
         }
     }
 
     @KetherParser(["drop-item"], shared = true)
     fun actionDropItem() = combinationParser {
-        it.group(type<ItemStack>(), command("at", then = type<Location>()), command("naturally", then = bool()).option()).apply(it) { item, loc, naturally ->
+        it.group(
+            type<ItemStack>(),
+            command("at", then = type<Location>()),
+            command("naturally", then = bool()).option()
+        ).apply(it) { item, loc, naturally ->
             now {
                 if (naturally == true) {
                     loc.world.dropItemNaturally(loc, item)
