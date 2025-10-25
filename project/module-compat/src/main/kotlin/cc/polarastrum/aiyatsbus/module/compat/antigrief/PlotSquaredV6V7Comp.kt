@@ -25,68 +25,60 @@ package cc.polarastrum.aiyatsbus.module.compat.antigrief
 
 import cc.polarastrum.aiyatsbus.core.compat.AntiGrief
 import cc.polarastrum.aiyatsbus.core.compat.AntiGriefChecker
+import com.plotsquared.bukkit.util.BukkitUtil
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
-import p1xel.nobuildplus.Flags
-import p1xel.nobuildplus.NoBuildPlus
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import java.util.Optional
 
 /**
  * Aiyatsbus
- * cc.polarastrum.aiyatsbus.module.compat.antigrief.NoBuildPlusComp
+ * cc.polarastrum.aiyatsbus.module.compat.antigrief.PlotSquaredV6V7Comp
  *
  * @author mical
- * @since 2025/2/14 14:55
+ * @since 2025/10/6 09:41
  */
-class NoBuildPlusComp : AntiGrief {
+class PlotSquaredV6V7Comp : AntiGrief {
+
+    private fun isPlotMember(player: Player, location: Location): Boolean {
+        val psLocation = BukkitUtil.adapt(location)
+        if (psLocation.isPlotRoad) return false
+        if (!psLocation.isPlotArea) return true
+        return Optional.ofNullable(psLocation.plotArea?.getPlot(psLocation))
+            .map { plot -> plot.isAdded(player.uniqueId) || plot.isOwner(player.uniqueId) }.orElse(false)
+    }
 
     override fun canPlace(player: Player, location: Location): Boolean {
-        return !NoBuildPlus.getInstance().api.canExecute(player.world.name, Flags.build)
+        return isPlotMember(player, location)
     }
 
     override fun canBreak(player: Player, location: Location): Boolean {
-        return !NoBuildPlus.getInstance().api.canExecute(player.world.name, Flags.destroy)
+        return isPlotMember(player, location)
     }
 
     override fun canInteract(player: Player, location: Location): Boolean {
-        return !NoBuildPlus.getInstance().api.canExecute(player.world.name, Flags.use)
+        return isPlotMember(player, location)
     }
 
     override fun canInteractEntity(player: Player, entity: Entity): Boolean {
-        val world = player.world.name
-        return !when (entity.type.name.uppercase()) {
-            "VILLAGER" -> NoBuildPlus.getInstance().api.canExecute(world, Flags.villager)
-            "HORSE", "DONKEY", "MULE", "SKELETON_HORSE", "ZOMBIE_HORSE", "MINECART", "MINECART_CHEST", "MINECART_FURNACE", "MINECART_HOPPER", "MINECART_TNT" -> NoBuildPlus.getInstance().api.canExecute(
-                world,
-                Flags.ride
-            )
-
-            "ITEM_FRAME", "GLOW_ITEM_FRAME" -> NoBuildPlus.getInstance().api.canExecute(world, Flags.frame)
-            "ARMOR_STAND" -> NoBuildPlus.getInstance().api.canExecute(world, Flags.armorstand)
-            "PAINTING" -> NoBuildPlus.getInstance().api.canExecute(world, Flags.painting)
-            "FISHING_HOOK" -> NoBuildPlus.getInstance().api.canExecute(world, Flags.hook)
-            else -> false
-        }
+        return isPlotMember(player, entity.location)
     }
 
     override fun canDamage(player: Player, entity: Entity): Boolean {
-        return !NoBuildPlus.getInstance().api.canExecute(
-            player.world.name,
-            if (entity is Player) Flags.pvp else Flags.mob_damage
-        )
+        return isPlotMember(player, entity.location)
     }
 
     override fun getAntiGriefPluginName(): String {
-        return "NoBuildPlus"
+        return "PlotSquared"
     }
 
     companion object {
 
         @Awake(LifeCycle.ACTIVE)
         fun init() {
-            AntiGriefChecker.registerNewCompatibility(NoBuildPlusComp())
+            AntiGriefChecker.registerNewCompatibility(PlotSquaredV6V7Comp())
         }
     }
-} 
+}
