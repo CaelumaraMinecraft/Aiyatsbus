@@ -5,6 +5,7 @@ package cc.polarastrum.aiyatsbus.core
 import cc.polarastrum.aiyatsbus.core.data.*
 import cc.polarastrum.aiyatsbus.core.data.registry.Rarity
 import cc.polarastrum.aiyatsbus.core.data.registry.Target
+import cc.polarastrum.aiyatsbus.core.util.minimizeIdentifierString
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import taboolib.module.configuration.Configuration
@@ -20,12 +21,14 @@ import java.io.File
  * @since 2024/2/17 14:39
  */
 abstract class AiyatsbusEnchantmentBase(
-    final override val id: String,
+    id: String,
     final override val file: File?,
     final override val config: Configuration
 ) : AiyatsbusEnchantment {
 
-    override val enchantmentKey: NamespacedKey = NamespacedKey.minecraft(id)
+    override val id: String = id.minimizeIdentifierString()
+
+    override val enchantmentKey: NamespacedKey = NamespacedKey.fromString(id)!!
 
     override val basicData: BasicData = BasicData(config.getConfigurationSection("basic")!!)
 

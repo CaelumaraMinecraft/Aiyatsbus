@@ -118,8 +118,10 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
         // Clear the enchantment cache
         cache.set(bukkitRegistry, mutableMapOf<NamespacedKey, Enchantment>())
 
-        if (enchantmentRegistry.containsKey(CraftNamespacedKey.toMinecraft(enchant.enchantmentKey))) {
-            val nms = enchantmentRegistry[CraftNamespacedKey.toMinecraft(enchant.enchantmentKey)]
+        val minecraftEnchantKey = CraftNamespacedKey.toMinecraft(enchant.enchantmentKey)
+
+        if (enchantmentRegistry.containsKey(minecraftEnchantKey)) {
+            val nms = enchantmentRegistry[minecraftEnchantKey]
 
             if (nms != null) {
                 return (if (enchant.alternativeData.isVanilla) {
@@ -140,7 +142,7 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
 
         IRegistry.register(
             enchantmentRegistry,
-            MinecraftKey.withDefaultNamespace(enchant.id),
+            minecraftEnchantKey,
             vanillaEnchantment
         )
 

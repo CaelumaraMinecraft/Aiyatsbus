@@ -42,7 +42,7 @@ class NMSAiyatsbusEnchantment(val id: String) : net.minecraft.world.item.enchant
     emptyArray()
 ) {
 
-    private val enchantmentKey: NamespacedKey = NamespacedKey.minecraft(id)
+    private val enchantmentKey: NamespacedKey = NamespacedKey.fromString(id)!!
 
     private val enchant: AiyatsbusEnchantment?
         get() = Aiyatsbus.api().getEnchantmentManager().getEnchant(enchantmentKey)

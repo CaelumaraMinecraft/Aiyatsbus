@@ -146,6 +146,8 @@ class DefaultAiyatsbusEnchantmentManager : AiyatsbusEnchantmentManager {
     override fun loadFromFile(file: File) {
         val relativePath = file.path.substring(file.path.indexOf("enchants" + File.separator), file.path.length)
         val config = YamlUpdater.loadFromFile(relativePath, AiyatsbusSettings.enableUpdater, AiyatsbusSettings.updateContents)
+        val id = config["basic.id"].toString()
+        val key = NamespacedKey.fromString(id)!!
 
         val enchant = loadEnchant(file, config) ?: return
         if (!enchant.dependencies.checkAvailable()) return

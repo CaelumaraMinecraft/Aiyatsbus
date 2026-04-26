@@ -38,6 +38,7 @@ import net.minecraft.core.IRegistryCustom
 import net.minecraft.core.RegistryMaterials
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
+import net.minecraft.resources.MinecraftKey
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.dedicated.DedicatedServer
 import net.minecraft.world.item.enchantment.Enchantments
@@ -138,8 +139,10 @@ class DefaultModernEnchantmentRegisterer : ModernEnchantmentRegisterer {
     }
 
     override fun register(enchant: AiyatsbusEnchantmentBase): Enchantment {
-        if (BuiltInRegistries.ENCHANTMENT.containsKey(CraftNamespacedKey.toMinecraft(enchant.enchantmentKey))) {
-            val nms = BuiltInRegistries.ENCHANTMENT[CraftNamespacedKey.toMinecraft(enchant.enchantmentKey)]
+        val minecraftEnchantKey = CraftNamespacedKey.toMinecraft(enchant.enchantmentKey)
+
+        if (BuiltInRegistries.ENCHANTMENT.containsKey(minecraftEnchantKey)) {
+            val nms = BuiltInRegistries.ENCHANTMENT[minecraftEnchantKey]
             if (nms != null) {
                 return if (enchant.alternativeData.isVanilla) {
                     if (enchant !is cc.polarastrum.aiyatsbus.core.VanillaAiyatsbusEnchantmentBase) throw IllegalArgumentException("Enchant ${enchant.id} must be an impl of VanillaAiyatsbusEnchantment!")

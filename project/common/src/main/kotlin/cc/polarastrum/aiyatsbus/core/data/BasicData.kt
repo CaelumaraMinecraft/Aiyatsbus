@@ -1,6 +1,7 @@
 package cc.polarastrum.aiyatsbus.core.data
 
 import cc.polarastrum.aiyatsbus.core.util.coerceInt
+import cc.polarastrum.aiyatsbus.core.util.minimizeIdentifierString
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.chat.colored
 import taboolib.module.chat.uncolored
@@ -23,7 +24,7 @@ data class BasicData(
     /** 禁用该附魔的世界列表，在这些世界中附魔不会生效 */
     val disableWorlds: List<String> = root.getStringList("disable-worlds").ifEmpty { root.getStringList("disable_worlds") },
     /** 附魔的唯一标识符 */
-    val id: String = root.getString("id")!!,
+    val id: String = root.getString("id")!!.minimizeIdentifierString(),
     /** 附魔的显示名称 */
     val name: String = root.getString("name")!!,
     /** 附魔的最大等级，默认为 1 */

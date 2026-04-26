@@ -4,6 +4,8 @@ import cc.polarastrum.aiyatsbus.core.Aiyatsbus
 import cc.polarastrum.aiyatsbus.core.AiyatsbusEnchantment
 import cc.polarastrum.aiyatsbus.core.event.AiyatsbusEnchantmentExecuteEvent
 import cc.polarastrum.aiyatsbus.core.script.ScriptType
+import cc.polarastrum.aiyatsbus.core.util.minimizeString
+import net.kyori.adventure.key.Key
 import org.bukkit.entity.LivingEntity
 import taboolib.common.platform.function.warning
 import taboolib.library.configuration.ConfigurationSection
@@ -30,11 +32,27 @@ abstract class Trigger(
     val type: TriggerType
 ) : Closeable {
 
+    object InternalId {
+        fun fileName(enchant: Key, triggerType: TriggerType, triggerId: String): String {
+            return "enchantment_" +
+                    enchant.minimizeString().replace(":", "_") + "_" +
+                    triggerType.name.lowercase() + "_" +
+                    triggerId.replace("-", "_") +
+                    "_"
+        }
+    }
+
     /** 触发器 ID（配置名） */
     val id: String = root.name
-    /** 运行时唯一 ID，供脚本预热与调用使用 */
+
+    /**
+     * 运行时唯一 ID，供脚本预热与调用使用
+     *
+     * 需要符合文件名和类名规范
+     */
     val internalId: String =
-        "Enchantment_" + enchant?.basicData?.id + "_" + type.name.lowercase().replaceFirstChar { it.uppercase() } + "_" + id.replace("-", "_") + "_"
+//        "Enchantment_" + enchant?.basicData?.id + "_" + type.name.lowercase().replaceFirstChar { it.uppercase() } + "_" + id.replace("-", "_") + "_"
+        InternalId.fileName(enchant!!.enchantmentKey, type, id)
 
     /**
      * 初始化触发器

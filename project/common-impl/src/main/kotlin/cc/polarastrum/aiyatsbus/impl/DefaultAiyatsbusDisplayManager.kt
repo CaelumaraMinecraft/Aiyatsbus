@@ -214,8 +214,21 @@ class DefaultAiyatsbusDisplayManager : AiyatsbusDisplayManager {
             // FIXME: 不知道 1.21 是不是不需要这步啊, 到时候测试一下
             if (player.gameMode == GameMode.CREATIVE) {
                 this["enchants_serialized", PersistentDataType.STRING]!!.split("|").forEach { pair ->
-                    aiyatsbusEt(pair.split(":")[0])?.let { enchant ->
-                        addEt(enchant, pair.split(":")[1].toInt())
+                    val split = pair.split(":")
+                    // 对于非 minecraft 命名空间附魔的支持
+                    // "namespace:path:level" (if not minecraft namespace) or "path:level" (if minecraft namespace)
+                    // TODO(Attaccer) 其实我也不知道到底是否逻辑正确
+                    when (split.size) {
+                        2 -> {
+                            aiyatsbusEt(split[0])?.let { enchant ->
+                                addEt(enchant, split[1].toInt())
+                            }
+                        }
+                        3 -> {
+                            aiyatsbusEt(split[0] + ":" + split[1])?.let { enchant ->
+                                addEt(enchant, split[2].toInt())
+                            }
+                        }
                     }
                 }
             }

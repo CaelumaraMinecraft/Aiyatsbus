@@ -1,5 +1,6 @@
 package cc.polarastrum.aiyatsbus.core
 
+import net.kyori.adventure.key.KeyPattern
 import org.bukkit.NamespacedKey
 import java.io.File
 
@@ -27,6 +28,7 @@ interface AiyatsbusEnchantmentManager {
      *
      * @param key 附魔的字符串键
      * @return 对应的附魔实例，如果不存在则返回 null
+     * @see [cc.polarastrum.aiyatsbus.core.util.minimizeIdentifierString]
      */
     fun getEnchant(key: String): AiyatsbusEnchantment?
 

@@ -28,7 +28,10 @@ interface AiyatsbusEnchantment {
      * 附魔唯一标识符
      * 
      * 用于在系统内唯一标识该附魔，通常为文件名。
-     * 例如：`sharpness`、`flame`、`custom_enchant`
+     * 例如：`sharpness`、`flame`、`sample:custom_enchant`
+     * 若命名空间为 `minecraft`, 这个命名空间不会被包含在字符串中. 反之则会被包含
+     *
+     * @see [cc.polarastrum.aiyatsbus.core.util.minimizeIdentifierString]
      */
     val id: String
 

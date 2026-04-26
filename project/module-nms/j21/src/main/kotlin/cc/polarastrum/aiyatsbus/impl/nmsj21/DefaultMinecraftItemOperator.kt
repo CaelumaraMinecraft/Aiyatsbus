@@ -93,19 +93,34 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
         return (nmsStack as NMSItemStack).hurtAndBreak(amount, (entity as CraftLivingEntity).handle, null)
     }
 
-    private fun resourceLocationGetPath(resourceLocation: Any): String {
-        if (versionId > 12110) {
-            return dynamic(
+    private fun resourceLocationGetMinimizeString(resourceLocation: Any): String {
+        val namespace: String = if (versionId > 12110) {
+            dynamic(
+                DynamicOpcode.INVOKEVIRTUAL,
+                "net.minecraft.resources.Identifier#getNamespace()java.lang.String;",
+                resourceLocation
+            ) as String
+        } else {
+            dynamic(
+                DynamicOpcode.INVOKEVIRTUAL,
+                "net.minecraft.resources.ResourceLocation#getNamespace()java.lang.String;",
+                resourceLocation
+            ) as String
+        }
+        val path = if (versionId > 12110) {
+            dynamic(
                 DynamicOpcode.INVOKEVIRTUAL,
                 "net.minecraft.resources.Identifier#getPath()java.lang.String;",
                 resourceLocation
             ) as String
+        } else {
+            dynamic(
+                DynamicOpcode.INVOKEVIRTUAL,
+                "net.minecraft.resources.ResourceLocation#getPath()java.lang.String;",
+                resourceLocation
+            ) as String
         }
-        return dynamic(
-            DynamicOpcode.INVOKEVIRTUAL,
-            "net.minecraft.resources.ResourceLocation#getPath()java.lang.String;",
-            resourceLocation
-        ) as String
+        return if (namespace == "minecraft") path else "$namespace:$path"
     }
 
     private fun nmsEnchNamespacedKey(resourceKey: ResourceKey<*>): Any {

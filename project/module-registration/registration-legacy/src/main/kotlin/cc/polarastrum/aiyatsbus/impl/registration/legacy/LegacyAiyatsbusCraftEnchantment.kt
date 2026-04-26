@@ -35,7 +35,7 @@ open class LegacyAiyatsbusCraftEnchantment(
         enchant.displayer.enchant = this
     }
 
-    private val hashCode = enchant.id.hashCode()
+    private val hashCode = enchant.enchantmentKey.hashCode()
 
     override fun getName(): String = enchant.basicData.id.uppercase()
 
