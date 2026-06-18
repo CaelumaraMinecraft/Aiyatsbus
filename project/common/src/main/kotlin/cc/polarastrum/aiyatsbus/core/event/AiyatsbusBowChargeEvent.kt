@@ -165,7 +165,7 @@ object ChargeHandler {
 
     /**
      * 存玩家的蓄力信息
-     * 键为玩家名称，值为对应的 [ChargeInfo] 对象。
+     * 键为玩家名称，值为对应的 [AiyatsbusBowChargeEvent.ChargeInfo] 对象。
      */
     val chargeInfo = ConcurrentHashMap<String, AiyatsbusBowChargeEvent.ChargeInfo>()
 
@@ -173,7 +173,7 @@ object ChargeHandler {
      * 获取指定玩家的蓄力信息。
      *
      * @param player 要获取蓄力信息的玩家
-     * @return 玩家的 [ChargeInfo] 对象，如果不存在则返回 null
+     * @return 玩家的 [AiyatsbusBowChargeEvent.ChargeInfo] 对象，如果不存在则返回 null
      */
     operator fun get(player: Player): AiyatsbusBowChargeEvent.ChargeInfo? {
         return chargeInfo[player.name]

@@ -29,6 +29,7 @@ import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.event.player.PlayerEvent
+import org.bukkit.event.player.PlayerExpChangeEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
@@ -99,6 +100,7 @@ class DefaultAiyatsbusEventExecutor : AiyatsbusEventExecutor {
 //                if (event.from.world == event.to.world && event.from.distance(event.to) < 1e-1) return@EventResolver
 //            }
         )
+        resolvers += PlayerExpChangeEvent::class.java to EventResolver<PlayerExpChangeEvent>({ event, _ -> event.player.checkedIfIsNPC() })
         resolvers += BlockDropItemEvent::class.java to EventResolver<BlockDropItemEvent>({ event, _ -> event.player.checkedIfIsNPC() })
         resolvers += BlockDamageEvent::class.java to EventResolver<BlockDamageEvent>({ event, _ -> event.player.checkedIfIsNPC() })
         resolvers += BlockPlaceEvent::class.java to EventResolver<BlockPlaceEvent>({ event, _ -> event.player.checkedIfIsNPC() })
@@ -114,24 +116,27 @@ class DefaultAiyatsbusEventExecutor : AiyatsbusEventExecutor {
         )
         resolvers += EntityDamageByEntityEvent::class.java to EventResolver<EntityDamageByEntityEvent>(
             entityResolver = { event, playerReference ->
+                val damager = event.damager
+                val defender = event.entity
                 // 攻击者和受害者有任何一方是 NPC 就都不应触发此事件
-                if (event.damager.checkIfIsNPC() || event.entity.checkIfIsNPC()) {
-                    null to1 false
+                if (damager.checkIfIsNPC() || defender.checkIfIsNPC()) {
+                    return@EventResolver null to1 false
                 }
                 when (playerReference) {
-                    "damager", null -> when (event.damager) {
-                        is Player -> event.damager as? LivingEntity
-                        is Projectile -> ((event.damager as Projectile).shooter as? LivingEntity)
+                    "attacker", null -> when (damager) {
+                        is LivingEntity -> damager
+                        is Projectile -> (damager.shooter as? LivingEntity)
                         else -> null
                     }.checkedIfIsNPC()
-
-                    "entity" -> (event.entity as? LivingEntity).checkedIfIsNPC()
+                    "damager" -> (damager as? LivingEntity).checkedIfIsNPC()
+                    "defender", "entity" -> (defender as? LivingEntity).checkedIfIsNPC()
                     else -> null to1 false
                 }
             },
             itemResolver = { event, _, entity, slot ->
-                if (event.damager is Trident) {
-                    return@EventResolver (event.damager as Trident).item to1 true
+                val damager = event.damager
+                if (damager is Trident) {
+                    return@EventResolver damager.item to1 true
                 }
                 return@EventResolver EventResolver.defaultItemResolver(entity, slot)
             }
