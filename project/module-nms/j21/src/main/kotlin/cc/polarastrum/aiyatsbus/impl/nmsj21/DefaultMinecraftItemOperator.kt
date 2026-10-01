@@ -148,7 +148,7 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
         val map = Maps.newHashMapWithExpectedSize<AiyatsbusEnchantment, Int>(entries.size)
         for (entry in entries) {
             map[aiyatsbusEtOrThrow(
-                resourceLocationGetPath(nmsEnchNamespacedKey(entry.key.unwrapKey().get()))
+                resourceLocationGetMinimizeString(nmsEnchNamespacedKey(entry.key.unwrapKey().get()))
             )] = entry.value
         }
         return map
@@ -164,7 +164,7 @@ class DefaultMinecraftItemOperator : MinecraftItemOperator {
         val array = Array<Array<Any>>(entries.size) { arrayOf() }
         entries.forEachIndexed { i, entry ->
             array[i] = arrayOf(aiyatsbusEtOrThrow(
-                resourceLocationGetPath(nmsEnchNamespacedKey(entry.key.unwrapKey().get()))
+                resourceLocationGetMinimizeString(nmsEnchNamespacedKey(entry.key.unwrapKey().get()))
             ), entry.value)
         }
         return array
